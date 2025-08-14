@@ -1,0 +1,36 @@
+name: Build Extreme 2D Fighter
+
+on:
+  workflow_dispatch: # Allows manual run
+  push:              # Runs when you push changes
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Unzip game files
+        run: Expand-Archive Extreme_2D_Fighter.zip -DestinationPath game
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pygame pyinstaller
+
+      - name: Build EXE
+        run: |
+          cd game
+          pyinstaller --onefile main.py
+
+      - name: Upload EXE to Releases
+        uses: actions/upload-artifact@v3
+        with:
+          name: Extreme_2D_Fighter
+          path: game/dist/main.exe
